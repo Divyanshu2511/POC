@@ -41,7 +41,7 @@ function loadCalender() {
     var previousMonthDays = new Date(year, month, 0).getDate();
     var currentMonthDays = new Date(year, month + 1, 0).getDate();
     var beforeDays = (firstDayOfMonth - 1 > 0) ? (firstDayOfMonth - 1) : 6;
-    var count = 42;
+    var count = (beforeDays == 6 || (beforeDays == 5 && currentMonthDays == 31)) ? 42 : 35;
     var days = [];
     var combinedDate = "" + year + month + day;
     document.getElementById("month").innerHTML = months[Math.abs(month) % 12];
@@ -52,7 +52,8 @@ function loadCalender() {
     renderDates(days, 1, count - days.length, month + 1, 2);
 
     for (var i = 0; i < days.length; i++) {
-        var dateString = days[i].date + days[i].month;
+
+        var dateString = days[i].date == 1 ? days[i].date + "-" + days[i].month : days[i].date;
 
         calendar.innerHTML +=
             '<div class="day ' + ((days[i].unique_key === combinedDate) ? "day_selected" : "") + '">' +
@@ -64,7 +65,6 @@ function loadCalender() {
             ' </div></div>';
     }
 }
-
 
 /**
  * For displaying date , month inside a calendar and unique key for storing data inside localStorage;
@@ -111,13 +111,12 @@ function renderEvents(localData, unique_key) {
                 ' <span class="title" title="' + events[i].title + '">' + events[i].title + '</span>' +
                 '</div><div >' +
                 '<span class="edit_button" data-action="edit_event" data-id=' + unique_key + "#" + i + '  data-eid=' + unique_key + '> &#8635</span>' +
-                '</div></div >' ;
+                '</div></div >';
         }
     }
     if (events.length > 2) eventsData += '<div class="more_events"  data-id=' + unique_key + ' data-action="show_more_events" >...</div>';
     return eventsData;
 }
-
 
 /**
  * For Displaying  more than two Events for specific date inside calender as Popup ;
@@ -140,7 +139,7 @@ function showMoreEvents(unique_key) {
     }
     showPlace.innerHTML = eventsData;
 
-    showPlace.innerHTML += ' <input id=cancelButton type="button"  onclick="cancel()" value="Cancel">';
+    showPlace.innerHTML += ' <input id=cancelButton type="button"  onclick="cancel()" value="&times">';
     newEventModal.style.display = 'block';
 }
 
@@ -167,26 +166,24 @@ function forAddingEvents() {
         '<form name="forms1">' +
         '<div id="eventsInfo">' +
         '<div id="eventsInfo1" >' +
-        '<label for="Event">Tittle:</label>' +
+        '<lebel for="Date">Date:' + todaysDate + '</lebel><br>' +
+        '<label for="Event">Title:</label>' +
         '<input type="text" name="title"  placeholder="Event Title"  value=""  />' +
         '<div id="message"></div><br>' +
-        '<lebel for="Date">Date:</lebel>' +
-        '<input type="text" name="eventDateOutput" value="' + todaysDate + '" />' +
-        '<div></div><br>' +
-        '<lebel for="Time">TimeFrom:</lebel>' +
+        '<lebel for="Time">Time From:</lebel>' +
         '<input type="time" name="time" value=' + hours + ':' + minutes + ' />' +
-        '<lebel for="TimeTo" style="margin-left: 10px">TimeTo:</lebel>' +
+        '<lebel for="TimeTo" style="margin-left: 10px">To:</lebel>' +
         '<input type="time" name="time1" value=' + hours1 + ':' + minutes1 + ' /><br>' +
         '<div id="message1"></div><br>' +
         '<lebel for="Description">Description:</lebel><br>' +
         ' <textarea name="description" id="txt" cols="30" rows="5" placeholder="Description"></textarea></div>' +
         ' <div id="addAttende">' +
-        '  <label for="attende">AddAttende:</label>' +
+        '  <label for="attende">Add Attendee:</label>' +
         ' <input type="button" class="addAttendeButton" value="+" onclick="addNewAttende()">' +
         ' </div></div>' +
         ' <div id=saveClose align="center">' +
-        ' <button type="button" id="saveButton" onclick="SaveEvent()">Save</button>' +
-        ' <input type="button" id="cancelButton" onclick="cancel()" value="Cancel">' +
+        ' <button type="button" id="saveButton" data-action ="save_event"  data-id=' + unique_key + ' >Save</button>' +
+        ' <input type="button" id="cancelButton" onclick="cancel()" value="&times">' +
         '</form></div>';
 
     showPlace.innerHTML = details;
@@ -200,21 +197,22 @@ function addNewAttende() {
     var showPlace1 = document.getElementById("addAttende");
     var div = document.createElement("div");
     var attende = "<input type='text' name='attende' data-id='attendeName_" + counter +
-        "' placeholder='AddAttende' /><input type='button' class='addAttendeButton' value='-' onclick='removeAttende(event)'/>"
-
+        "' placeholder='AddAttende' /><input type='button' class='addAttendeButton' value='-' onclick='removeAttende(event)'/>"+
+        '<div class="message2"></div>';
+          
     div.innerHTML = attende;
-    div.setAttribute("style", "margin-bottom:5gitpx")
+    div.setAttribute("style", "margin-bottom:5px")
     showPlace1.appendChild(div);
     counter++;
 }
 
 /**
- * Function for Saving Newly added Event as a Object  ;
+ * Function for Saving Event as a Object  ;
  */
-function SaveEvent() {
+function saveEvent(unique_key, index) {
     var formData = document.forms[0].elements;
-
-    if (Eventvalidation() == true) {    
+    
+    if (Eventvalidation() == true) {
         obj = {
             attendes: []
         };
@@ -226,10 +224,29 @@ function SaveEvent() {
             } else
                 obj[formData[i].name] = formData[i].value;
         }
-        addEvents(obj);
-        newEventModal.style.display = 'none';
+    if(unique_key && !index)
+    addEvents(obj);
+       
+    else if(unique_key && index){
+        data = getLocalData();
+        var event = data[unique_key][index] ;
+        var events =data[unique_key] ;
+        event = obj;
+        data[unique_key][index] = event;
+        localStorage.setItem("events", JSON.stringify(data));
+
+        events.sort((a, b) => {
+            if (a.time > b.time) return 1;
+            else if (b.time > a.time) return -1;
+            else return 0;
+        });
+        data[unique_key] = events;
+        localStorage.setItem("events", JSON.stringify(data));
     }
+
+    newEventModal.style.display = 'none';
     loadCalender();
+}
 }
 
 /**
@@ -237,33 +254,60 @@ function SaveEvent() {
  */
 function Eventvalidation() {
     var formData = document.forms[0].elements;
-    var validated =true;
+    var validated = true;
     validateInput();
-    function setError(ele) { 
+
+    function setError(ele) {
         if (ele == 1) {
-            var element = document.getElementById('message');
-            element.style["color"] = 'red';
-            element.innerHTML = 'Please Enter Event Tittle *';
+            var element1 = document.getElementById('message');
+            element1.style["color"] = 'red';
+            element1.innerHTML = 'Please Enter Event Tittle*';
         }
         if (ele == 2) {
             var element = document.getElementById('message1');
             element.style["color"] = 'red';
             element.innerHTML = 'Plese Check Event Timings*';
-        } 
+        }
+        if (ele == 3) {
+        //     var element = document.getElementsByClassName('message2');
+        //    // element.style["color"] = 'red';
+        }
+    }
+
+    function setSucess(ele) {
+        if (ele == 1) {
+            var element1 = document.getElementById('message');
+            element1.innerHTML = null;
+        }
+        if (ele == 2) {
+            var element = document.getElementById('message1');
+            element.innerHTML = null;
+        }
+        if (ele == 3) {
+            var element = document.getElementsByClassName('message2');
+            element.innerHTML = null;
+        }
     }
 
     function validateInput() {
         if (formData[0].value.trim() === '') {
             setError(1);
-            validated =false;
+            validated = false;
+        }else setSucess(1);
+        if ((formData[1].value >= formData[2].value) || formData[1].value == '' || formData[2].value == '' || (formData[1].value == formData[2].value)) {
+            console.log(formData[1].value , formData[2].value)
+            setError(2);
+            validated = false;
+        }else setSucess(2);
+        for (let i = 6; i < formData.length - 4; i += 2) {
+            if (formData[i].value) {
+                const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                setError(3);
+                validated = regex.test(formData[i].value);
+            }else setSucess(3);
         }
-       if ( (formData[1].value >= formData[2].value) || (formData[1].value == '' || formData[2].value == '') || (formData[1].value === formData[2].value) ) { 
-        setError(2);
-        validated =false;
-        }  
     }
-
-    return validated ;   
+    return validated;
 }
 
 /**
@@ -273,9 +317,7 @@ function Eventvalidation() {
 function addEvents(obj) {
     var data = getLocalData();
     var evs = data[unique_key] || [];
-
     evs.push(obj);
-
     evs.sort((a, b) => {
         if (a.time > b.time) return 1;
         else if (b.time > a.time) return -1;
@@ -300,24 +342,20 @@ calender.addEventListener("click", function (e) {
         dayEelement.classList.add("day_selected");
     }
     if (dataset.action === "edit_event") {
-        console.log('hyyyyi');
         index = customSplit(dataset.id, '#');
         unique_key = index[0];
         forEditingEvents(unique_key, index[1]);
-
     }
     if (dataset.action === "add_event") {
         unique_key = dataset.id;
         todaysDate = dataset.date;
         forAddingEvents();
     }
-
     if (dataset.action === 'show_more_events') {
         unique_key = dataset.id;
         showMoreEvents(unique_key);
-    }
+    }  
 });
-
 
 /**
  * Displays the editing event block 
@@ -334,6 +372,12 @@ editEventData.addEventListener("click", function (e) {
         unique_key = index[0];
         forEditingEvents(unique_key, index[1]);
     }
+    if (dataset.action === 'save_event') {
+        unique_key = dataset.id;
+        index = dataset.index;
+        saveEvent(unique_key, index);
+       
+    }
 });
 
 /**
@@ -349,19 +393,19 @@ function forEditingEvents(unique_key, index) {
         '<form action=" " name="forms1">' +
         '<div id="eventsInfo">' +
         '<div id="eventsInfo1" >' +
-        '<label for="Event">Tittle:</label>' +
-        '<input type="text" name="title"  value=' + events.title + ' />' +
+        '<label for="Event">Title:</label>' +
+        '<input type="text" name="title"  value="' + events.title + '" />' +
         '<div id="message"></div><br>' +
-        '<lebel for="Time">TimeFrom:</lebel>' +
+        '<lebel for="Time">Time From:</lebel>' +
         '<input type="time" name="time" value=' + events.time + ' />' +
-        '<lebel for="TimeTo" style="margin-left: 10px">TimeTo:</lebel>' +
+        '<lebel for="TimeTo" style="margin-left: 10px">To:</lebel>' +
         '<input type="time" name="time1" value=' + events.time1 + ' /><br>' +
-        '<div id="message1"></div><br>' +  
+        '<div id="message1"></div><br>' +
         '<lebel for="Description">Description:</lebel><br>' +
         ' <textarea name="description" id="txt" cols="30" rows="5" >' + events.description + '</textarea>' +
         '</div>';
     details += ' <div id="addAttende">' +
-        '  <label for="attende">AddAttende:</label>' +
+        '  <label for="attende">Attendes:</label>' +
         ' <input type="button" class="addAttendeButton" value="+" onclick="addNewAttende()">';
     for (j = 0; j < events.attendes.length; j++) {
 
@@ -371,11 +415,11 @@ function forEditingEvents(unique_key, index) {
     }
     details += ' </div></div>' +
         ' <div id=saveClose align="center">' +
-        ' <input type="button" id="saveButton" value="Update"  onclick="updateEvent()">' +
-        '<input type="button" id="deleteEvent"  value="DeleteEvent" data-id='+index+' onclick="deleteEvents(event)"/>' +
-        ' <input id=cancelButton type="button"  onclick="cancel()" value="Cancel">' +
+        ' <input type="button" id="saveButton" value="Update"  data-action ="save_event"  data-id=' + unique_key + ' data-index = ' + index + '>' +
+        '<input type="button" id="deleteEvent"  value="Delete" data-id=' + index + ' onclick="deleteEvents(event)"/>' +
+        ' <input id=cancelButton type="button"  onclick="cancel()" value="&times">' +
         '</form></div>';
-       
+
     showPlace.innerHTML = details;
     newEventModal.style.display = 'block';
 }
@@ -398,40 +442,10 @@ function deleteEvents(event) {
     var data = getLocalData();
     var events = data[unique_key] || [];
 
-    if(events.length){
+    if (events.length) {
         events.splice(parseInt(target.dataset.id), 1)
         data[unique_key] = events;
         localStorage.setItem("events", JSON.stringify(data));
-        newEventModal.style.display = 'none';
-        loadCalender();
-    }
-}
-
-/**
- *  function for updating existing events
- */
-function updateEvent() {
-    var formData = document.forms[0].elements;
-    data = getLocalData();
-    var events = data[unique_key] || [];
-    var pos = index[1];
-    if (Eventvalidation() == true) { 
-        events[pos].title = formData[0].value;
-        events[pos].time = formData[1].value;
-        events[pos].time1 = formData[2].value;
-        events[pos].description = formData[3].value;
-        events[pos].attendes = [];
-        for (let i = 5; i < formData.length - 4; i += 2) {
-            events[pos].attendes.push(formData[i].value);
-        }
-        events.sort((a, b) => {
-            if (a.time > b.time) return 1;
-            else if (b.time > a.time) return -1;
-            else return 0;
-        });
-        data[unique_key] = events;
-        localStorage.setItem("events", JSON.stringify(data));
-
         newEventModal.style.display = 'none';
         loadCalender();
     }
@@ -449,7 +463,7 @@ function loadYears() {
     showingYear = document.getElementById('year');
     var startYear = 1900;
     var endYear = 2040;
-    
+
     for (var i = startYear, j = 0; i <= endYear; i++, j++) {
         var Addoption = document.createElement("option");
         Addoption.value = i;
@@ -479,7 +493,7 @@ function changeMonthByArrow() {
         }
         loadCalender();
     });
-  document.getElementById('backButton').addEventListener('click', () => {
+    document.getElementById('backButton').addEventListener('click', () => {
         month--;
         if (month < 0) {
             month = 11;

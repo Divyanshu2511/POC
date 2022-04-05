@@ -91,7 +91,6 @@ button {
 .body .event {
     background-color: #a7d0ef;
     white-space: nowrap;
-
     cursor: pointer;
     margin: 5px 0;
     padding: 2px;
@@ -103,7 +102,6 @@ button {
 #newEventModal .event {
     background-color: #a7d0ef;
     white-space: nowrap;
-
     cursor: pointer;
     margin: 5px 0;
     padding: 2px;
@@ -150,17 +148,19 @@ button {
 
 }
 
-
 #eventTitleInput.error {
     border: 2px solid red;
 }
 
 #cancelButton {
-    background-color: #40646e;
+    background-color: #e8f4fa;
     border: none;
-
-    font-size: 20px;
-    color: aliceblue;
+    font-size: 30px;
+    color: #0f1418;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    position: absolute;
 }
 
 #deleteEvent {
