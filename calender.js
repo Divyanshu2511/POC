@@ -424,11 +424,8 @@ function forEditingEvents(unique_key, id) {
         ' <input id=cancelButton type="button"  onclick="cancel()" value="Cancel">' +
         '</form>' +
         ' </div>';
-
     showPlace.innerHTML = details;
-
     newEventModal.style.display = 'block';
-
 }
 
 /**
