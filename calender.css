@@ -1,0 +1,197 @@
+body {
+    width: 100%;
+    display: flex;
+    margin-top: 0px;
+    justify-content: center;
+    background-color: #FFFCFF;
+}
+
+#weekdays {
+    font-size: 18px;
+    margin-top: 5px;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    color: #16181a;
+}
+
+
+#NavCalender {
+    background-color: #f4f0f0;
+    font-size: 18px;
+    font-family: sans-serif;
+
+}
+
+#NavCalender input,
+button {
+    border: none;
+    font-size: 20px;
+    margin-left: 10px;
+    background: border-box;
+    color: #2381c6;
+}
+
+#month,
+#changeYear {
+    margin-top: 2px;
+    margin-left: 10px;
+    color: #2381c6;
+}
+
+#NavCalender {
+    display: flex;
+
+}
+
+#container {
+    width: 100%;
+}
+
+#weekdays div {
+    width: 100%;
+}
+
+#weekdays div h4 {
+    width: 100%;
+}
+
+#calender {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.day {
+    width: 12%;
+    padding: 10px;
+    height: 105px;
+    margin: 6px;
+    box-shadow: 0px 0px 3px #CBD4C2;
+}
+
+.day_selected {
+    background-color: #deecf9;
+}
+
+.day .header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header .add_button {
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.body {
+    margin-top: 10px;
+
+}
+
+.body .event {
+    background-color: #a7d0ef;
+    white-space: nowrap;
+
+    cursor: pointer;
+    margin: 5px 0;
+    padding: 2px;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+#newEventModal .event {
+    background-color: #a7d0ef;
+    white-space: nowrap;
+
+    cursor: pointer;
+    margin: 5px 0;
+    padding: 2px;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+#newEventModal .event1 {
+    overflow: hidden;
+    margin-right: 11px;
+}
+
+#newEventModal .event1 .title {
+    margin-left: 10px;
+}
+
+.event1 {
+    overflow: hidden;
+    margin-right: 11px;
+}
+
+.event1 .title {
+    margin-left: 10px;
+}
+
+.body .more_events {
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#newEventModal {
+    display: none;
+    padding: 25px;
+    background-color: #e8f4fa;
+    box-shadow: 0px 0px 3px black;
+    border-radius: 5px;
+    width: auto;
+    top: 100px;
+    justify-content: space-between;
+    position: absolute;
+
+}
+
+
+#eventTitleInput.error {
+    border: 2px solid red;
+}
+
+#cancelButton {
+    background-color: #40646e;
+    border: none;
+
+    font-size: 20px;
+    color: aliceblue;
+}
+
+#deleteEvent {
+    background-color: #d36c6c;
+    border: none;
+    margin: 10px;
+    font-size: 20px;
+    color: aliceblue;
+}
+
+#saveButton {
+    border: none;
+    margin: 10px;
+    font-size: 20px;
+    background-color: #92a1d1;
+}
+
+#eventText {
+    font-size: 14px;
+}
+
+#eventsInfo {
+    display: flex;
+    width: 550px;
+    justify-content: space-between;
+}
+
+#eventsInfo1 {
+    width: 65%;
+}
+
+#addAttende {
+    width: 35%
+}
