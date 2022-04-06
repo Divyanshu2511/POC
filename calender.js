@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     loadCalender();
     loadYears();
     changeMonthByArrow();
+
 })
 
 /**
@@ -100,7 +101,7 @@ function renderEvents(localData, unique_key) {
             eventsData += '<div class="event" data-action="show_event_details" data-id=' + unique_key + "#" + i + '>' +
                 '<div class="event1"><span class="time">' + events[i].time + '</span>' +
                 ' <span class="title" title="' + events[i].title + '">' + events[i].title + '</span></div><div >' +
-                '<span class="edit_button" data-action="edit_event" data-id=' + unique_key + "#" + i + '  data-eid=' + unique_key + '> &#8635</span></div></div >' ;
+                '<span class="edit_button" data-action="edit_event" data-id=' + unique_key + "#" + i + '  data-eid=' + unique_key + '> &#8635</span></div></div >';
         }
     }
     if (events.length > 2) eventsData += '<div class="more_events"  data-id=' + unique_key + ' data-action="show_more_events" >...</div>';
@@ -120,8 +121,7 @@ function showMoreEvents(unique_key) {
             '<div class="event1"><span class="time">' + events[i].time + '</span>' +
             ' <span class="title" title="' + events[i].title + '">' + events[i].title + '</span></div><div>' +
             '<span class="edit_button" data-action="edit_event" data-id=' + unique_key + "#" + i + '  data-eid=' + unique_key + '> &#8635</span></div></div>';
-        }
-            
+    }
     showPlace.innerHTML = eventsData;
     showPlace.innerHTML += ' <input id=cancelButton type="button"  onclick="cancel()" value="&times">';
     newEventModal.style.display = 'block';
@@ -130,7 +130,7 @@ function showMoreEvents(unique_key) {
 /**
  * Function for adding Events for specific date in a calendar; 
  */
-function forAddingEvents() {
+function forAddingEvents(unique_key, todaysDate) {
     var date = new Date();
     var hours = date.getHours();
     var hours1 = hours;
@@ -245,7 +245,7 @@ function Eventvalidation() {
             if (!regex.test(attendessList[i].value.trim())) {
                 attendessList[i].style.border = '2px solid red';
                 validated = false;
-            } else attendessList[i].style.border = '2px solid black';
+            } else attendessList[i].style.border = '1px solid black';
         }
     }
     return validated;
@@ -295,7 +295,7 @@ calender.addEventListener("click", function (e) {
     if (dataset.action === "add_event") {
         unique_key = dataset.id;
         todaysDate = dataset.date;
-        forAddingEvents();
+        forAddingEvents(unique_key, todaysDate);
     }
     if (dataset.action === 'show_more_events') {
         unique_key = dataset.id;
@@ -344,12 +344,10 @@ function forEditingEvents(unique_key, index) {
             '<input type="button" class="addAttendeButton"  value="-" data-index = ' + j + ' data-parentindex = ' + index + ' onclick="removeAttende(event);"/></div>';
         counter++;
     }
-    details += ' </div></div>' +
-        ' <div id=saveClose align="center">' +
+    details += ' </div></div><div id=saveClose align="center">' +
         ' <input type="button" id="saveButton" value="Update"  data-action ="save_event"  data-id=' + unique_key + ' data-index = ' + index + '>' +
         '<input type="button" id="deleteEvent"  value="Delete" data-id=' + index + ' onclick="deleteEvents(event)"/>' +
-        ' <input id=cancelButton type="button"  onclick="cancel()" value="&times">' +
-        '</form></div>';
+        ' <input id=cancelButton type="button"  onclick="cancel()" value="&times"></form></div>';
     showPlace.innerHTML = details;
     newEventModal.style.display = 'block';
 }
@@ -391,10 +389,10 @@ function loadYears() {
     var startYear = 1900;
     var endYear = 2040;
     for (var i = startYear, j = 0; i <= endYear; i++, j++) {
-        var Addoption = document.createElement("option");
-        Addoption.value = i;
-        Addoption.innerHTML = i;
-        showingYear.options.add(Addoption);
+        var addOption = document.createElement("option");
+        addOption.value = i;
+        addOption.innerHTML = i;
+        showingYear.options.add(addOption);
         showingYear.options[j].removeAttribute("selected", "selected");
         if (i == year) showingYear.options[j].setAttribute("selected", "selected");
     }
@@ -443,3 +441,10 @@ function customSplit(string, split) {
     arr.push(result);
     return arr;
 }
+document.getElementById('today').addEventListener("click", function () {
+    date = new Date();
+    year = date.getFullYear();
+    month = date.getMonth();
+    day = date.getDate();
+    loadCalender();
+})
