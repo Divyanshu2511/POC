@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
     changeMonthByArrow();
 })
 
-
 /**
  * To Display Rendered Calender
  */
@@ -52,8 +51,8 @@ function loadCalender() {
     renderDates(days, 1, count - days.length, month + 1, 2);
 
     for (var i = 0; i < days.length; i++) {
-
-        var dateString = days[i].date == 1 ? days[i].date + "-" + days[i].month : days[i].date;
+        var date = days[i].date;
+        var dateString = date == 1 ? date + "-" + days[i].month : date;
 
         calendar.innerHTML +=
             '<div class="day ' + ((days[i].unique_key === combinedDate) ? "day_selected" : "") + '">' +
@@ -75,20 +74,16 @@ function loadCalender() {
  * @param {number} type 
  */
 function renderDates(arr, start, end, month, type) {
-    var y = year,
-        m = (Math.abs(month === -1 ? 11 : month) % 12);
-
+    var y = year, m = (Math.abs(month === -1 ? 11 : month) % 12);
     if (type === 0 && m === 11) y = year - 1;
     if (type === 1 && (m >= 0 || m <= 11)) y = year;
     if (type === 2 && m === 0) y = year + 1;
-
     for (var i = start; i <= end; i++) {
         arr.push({
             date: i,
             month: i === 1 && m >= 0 && months[m],
             unique_key: "" + y + "" + m + i,
             todaysDate: "" + i + "-" + months[m] + "-" + y
-
         });
     }
 }
@@ -102,7 +97,6 @@ function renderEvents(localData, unique_key) {
     var eventsData = "";
     var events = localData[unique_key] || [];
     for (var i = 0; i < events.length; i++) {
-
         if (i === 2) break;
         else {
             eventsData += '<div class="event" data-action="show_event_details" data-id=' + unique_key + "#" + i + '>' +
@@ -126,9 +120,7 @@ function showMoreEvents(unique_key) {
     localData = getLocalData();
     var eventsData = "";
     var events = localData[unique_key] || [];
-
     for (var i = 0; i < events.length; i++) {
-
         eventsData += '<div class="event" style="display:flex " data-action="show_event_details" data-id=' + unique_key + "#" + i + '>' +
             '<div class="event1">' +
             '<span class="time">' + events[i].time + '</span>' +
@@ -138,14 +130,12 @@ function showMoreEvents(unique_key) {
             '</div></div>';
     }
     showPlace.innerHTML = eventsData;
-
     showPlace.innerHTML += ' <input id=cancelButton type="button"  onclick="cancel()" value="&times">';
     newEventModal.style.display = 'block';
 }
 
 /**
  * Function for adding Events for specific date in a calendar; 
- 
  */
 function forAddingEvents() {
     var date = new Date();
@@ -153,7 +143,6 @@ function forAddingEvents() {
     var hours1 = hours;
     var minutes = date.getMinutes();
     for (i = 0; i < 5; i++) {
-
         if (minutes % 5 == 0) break;
         else minutes++;
     }
@@ -161,31 +150,17 @@ function forAddingEvents() {
     minutes = minutes < 10 ? minutes = 10 : minutes;
     hours = minutes > 40 ? (minutes = 10, hours += 1) : hours;
     var minutes1 = minutes + 15;
-
     var details =
-        '<form name="forms1">' +
-        '<div id="eventsInfo">' +
-        '<div id="eventsInfo1" >' +
-        '<lebel for="Date">Date:' + todaysDate + '</lebel><br>' +
-        '<label for="Event">Title:</label>' +
-        '<input type="text" name="title"  placeholder="Event Title"  value=""  />' +
-        '<div id="message"></div><br>' +
-        '<lebel for="Time">Time From:</lebel>' +
-        '<input type="time" name="time" value=' + hours + ':' + minutes + ' />' +
-        '<lebel for="TimeTo" style="margin-left: 10px">To:</lebel>' +
-        '<input type="time" name="time1" value=' + hours1 + ':' + minutes1 + ' /><br>' +
-        '<div id="message1"></div><br>' +
-        '<lebel for="Description">Description:</lebel><br>' +
+        '<form name="forms1"><div id="eventsInfo"><div id="eventsInfo1" ><lebel for="Date">Date:' + todaysDate + '</lebel><br>'+
+        '<label for="Event">Title:</label><input type="text" name="title"  placeholder="Event Title"  value=""  />' +
+        '<div id="message"></div><br><lebel for="Time">Time From:</lebel><input type="time" name="time" value=' + hours + ':' + minutes + ' />' +
+        '<lebel for="TimeTo" style="margin-left: 10px">To:</lebel><input type="time" name="time1" value=' + hours1 + ':' + minutes1 + ' /><br>' +
+        '<div id="message1"></div><br><lebel for="Description">Description:</lebel><br>' +
         ' <textarea name="description" id="txt" cols="30" rows="5" placeholder="Description"></textarea></div>' +
-        ' <div id="addAttende">' +
-        '  <label for="attende">Add Attendee:</label>' +
-        ' <input type="button" class="addAttendeButton" value="+" onclick="addNewAttende()">' +
-        ' </div></div>' +
-        ' <div id=saveClose align="center">' +
+        ' <div id="addAttende"> <label for="attende">Add Attendee:</label>' +
+        ' <input type="button" class="addAttendeButton" value="+" onclick="addNewAttende()"></div></div> <div id=saveClose align="center">' +
         ' <button type="button" id="saveButton" data-action ="save_event"  data-id=' + unique_key + ' >Save</button>' +
-        ' <input type="button" id="cancelButton" onclick="cancel()" value="&times">' +
-        '</form></div>';
-
+        ' <input type="button" id="cancelButton" onclick="cancel()" value="&times"></form></div>' ;
     showPlace.innerHTML = details;
     newEventModal.style.display = 'block';
 }
@@ -196,10 +171,8 @@ function forAddingEvents() {
 function addNewAttende() {
     var showPlace1 = document.getElementById("addAttende");
     var div = document.createElement("div");
-    var attende = "<input type='text' name='attende' data-id='attendeName_" + counter +
-        "' placeholder='AddAttende' /><input type='button' class='addAttendeButton' value='-' onclick='removeAttende(event)'/>"+
-        '<div class="message2"></div>';
-          
+    var attende = "<input type='text' name='attende' class='new_attendee' data-id='attendeName_" + counter +
+        "' placeholder='AddAttende' /><input type='button' class='addAttendeButton' value='-' onclick='removeAttende(event)'/>";
     div.innerHTML = attende;
     div.setAttribute("style", "margin-bottom:5px")
     showPlace1.appendChild(div);
@@ -208,15 +181,16 @@ function addNewAttende() {
 
 /**
  * Function for Saving Event as a Object  ;
+ * @param {number} unique_key
+ * @param {number} index
  */
 function saveEvent(unique_key, index) {
     var formData = document.forms[0].elements;
-    
     if (Eventvalidation() == true) {
         obj = {
             attendes: []
         };
-        for (let i = 0; i < formData.length - 1; i++) {
+        for (var i = 0; i < formData.length - 1; i++) {
             if (formData[i].name == 'attende' && formData[i].value !== '') {
                 obj.attendes.push(formData[i].value);
             } else if (formData[i].name == 'attende' || formData[i].name == "") {
@@ -225,32 +199,22 @@ function saveEvent(unique_key, index) {
                 obj[formData[i].name] = formData[i].value;
         }
     if(unique_key && !index)
-    addEvents(obj);
-       
+    addEvents(obj);  
     else if(unique_key && index){
         data = getLocalData();
         var event = data[unique_key][index] ;
-        var events =data[unique_key] ;
         event = obj;
         data[unique_key][index] = event;
-        localStorage.setItem("events", JSON.stringify(data));
-
-        events.sort((a, b) => {
-            if (a.time > b.time) return 1;
-            else if (b.time > a.time) return -1;
-            else return 0;
-        });
-        data[unique_key] = events;
-        localStorage.setItem("events", JSON.stringify(data));
+        localStorage.setItem("events", JSON.stringify(data));    
+        addEvents(obj,index)  
     }
-
     newEventModal.style.display = 'none';
     loadCalender();
 }
 }
 
 /**
- * Function for validating title and Event Timings inside an Event
+ * Function for validating title and Event Timings and Attendee inside an Event
  */
 function Eventvalidation() {
     var formData = document.forms[0].elements;
@@ -268,10 +232,6 @@ function Eventvalidation() {
             element.style["color"] = 'red';
             element.innerHTML = 'Plese Check Event Timings*';
         }
-        if (ele == 3) {
-        //     var element = document.getElementsByClassName('message2');
-        //    // element.style["color"] = 'red';
-        }
     }
 
     function setSucess(ele) {
@@ -283,29 +243,26 @@ function Eventvalidation() {
             var element = document.getElementById('message1');
             element.innerHTML = null;
         }
-        if (ele == 3) {
-            var element = document.getElementsByClassName('message2');
-            element.innerHTML = null;
-        }
     }
 
     function validateInput() {
+        var attendessList = document.querySelectorAll('.new_attendee');
+        var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (formData[0].value.trim() === '') {
             setError(1);
             validated = false;
         }else setSucess(1);
         if ((formData[1].value >= formData[2].value) || formData[1].value == '' || formData[2].value == '' || (formData[1].value == formData[2].value)) {
-            console.log(formData[1].value , formData[2].value)
             setError(2);
             validated = false;
         }else setSucess(2);
-        for (let i = 6; i < formData.length - 4; i += 2) {
-            if (formData[i].value) {
-                const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                setError(3);
-                validated = regex.test(formData[i].value);
-            }else setSucess(3);
-        }
+        for(var i= 0 ;i < attendessList.length; i++){
+            if(!regex.test(attendessList[i].value.trim())){
+                attendessList[i].style.border = '2px solid red';
+                validated = false;
+            }
+            else attendessList[i].style.border = '2px solid black';
+        }   
     }
     return validated;
 }
@@ -313,12 +270,16 @@ function Eventvalidation() {
 /**
  *  Function for Saving Newly added Object as an Event inside LocalStorage ;
  * @param {object} obj
+ * @param {number} index
  */
-function addEvents(obj) {
+function addEvents(obj,index) {
     var data = getLocalData();
     var evs = data[unique_key] || [];
-    evs.push(obj);
-    evs.sort((a, b) => {
+   
+    if(obj && index);
+    else evs.push(obj);
+
+    evs.sort(function (a, b){
         if (a.time > b.time) return 1;
         else if (b.time > a.time) return -1;
         else return 0;
@@ -358,16 +319,13 @@ calender.addEventListener("click", function (e) {
 });
 
 /**
- * Displays the editing event block 
- * @param {string} unique_key 
- * @param {number} id 
+ *Event Delegation for doing tasks on popup like Edit or Save event. 
  */
 var editEventData = document.getElementById("eventDetails");
 editEventData.addEventListener("click", function (e) {
     var target = e.target;
     var dataset = target.dataset;
     if (dataset.action === "edit_event") {
-        console.log('hyyyyiii');
         index = customSplit(dataset.id, '#');
         unique_key = index[0];
         forEditingEvents(unique_key, index[1]);
@@ -376,7 +334,6 @@ editEventData.addEventListener("click", function (e) {
         unique_key = dataset.id;
         index = dataset.index;
         saveEvent(unique_key, index);
-       
     }
 });
 
@@ -388,27 +345,16 @@ editEventData.addEventListener("click", function (e) {
 function forEditingEvents(unique_key, index) {
     localData = getLocalData();
     var events = localData[unique_key][index] || [];
-
     var details =
-        '<form action=" " name="forms1">' +
-        '<div id="eventsInfo">' +
-        '<div id="eventsInfo1" >' +
-        '<label for="Event">Title:</label>' +
-        '<input type="text" name="title"  value="' + events.title + '" />' +
-        '<div id="message"></div><br>' +
-        '<lebel for="Time">Time From:</lebel>' +
-        '<input type="time" name="time" value=' + events.time + ' />' +
-        '<lebel for="TimeTo" style="margin-left: 10px">To:</lebel>' +
-        '<input type="time" name="time1" value=' + events.time1 + ' /><br>' +
-        '<div id="message1"></div><br>' +
-        '<lebel for="Description">Description:</lebel><br>' +
-        ' <textarea name="description" id="txt" cols="30" rows="5" >' + events.description + '</textarea>' +
-        '</div>';
-    details += ' <div id="addAttende">' +
-        '  <label for="attende">Attendes:</label>' +
+        '<form action=" " name="forms1"><div id="eventsInfo"><div id="eventsInfo1" ><label for="Event">Title:</label>' +
+        '<input type="text" name="title"  value="' + events.title + '" /><div id="message"></div><br>' +
+        '<lebel for="Time">Time From:</lebel><input type="time" name="time" value=' + events.time + ' />' +
+        '<lebel for="TimeTo" style="margin-left: 10px">To:</lebel><input type="time" name="time1" value='+ events.time1 +'>' +
+        '<div id="message1"></div><br><lebel for="Description">Description:</lebel><br>' +
+        ' <textarea name="description" id="txt" cols="30" rows="5" >' + events.description + '</textarea></div>' ;
+    details += ' <div id="addAttende"><label for="attende">Attendes:</label>' +
         ' <input type="button" class="addAttendeButton" value="+" onclick="addNewAttende()">';
     for (j = 0; j < events.attendes.length; j++) {
-
         details += '<div style = "margin-bottom:5px"> <input type="text" name="attende"  data-id="attendeName' + counter + '" value=' + events.attendes[j] + '   />' +
             '<input type="button" class="addAttendeButton"  value="-" data-index = ' + j + ' data-parentindex = ' + index + ' onclick="removeAttende(event);"/></div>';
         counter++;
@@ -419,18 +365,16 @@ function forEditingEvents(unique_key, index) {
         '<input type="button" id="deleteEvent"  value="Delete" data-id=' + index + ' onclick="deleteEvents(event)"/>' +
         ' <input id=cancelButton type="button"  onclick="cancel()" value="&times">' +
         '</form></div>';
-
     showPlace.innerHTML = details;
     newEventModal.style.display = 'block';
 }
 
 /**
- * function for removing attende inside edit event block
+ * function for removing attende inside from event .
  * @param {object} event
  */
 function removeAttende(event) {
     var target = event.target;
-    // console.log(target.dataset.index, target.dataset.parentindex, unique_key);
     target.parentNode.remove();
 }
 
@@ -441,7 +385,6 @@ function deleteEvents(event) {
     var target = event.target
     var data = getLocalData();
     var events = data[unique_key] || [];
-
     if (events.length) {
         events.splice(parseInt(target.dataset.id), 1)
         data[unique_key] = events;
@@ -450,7 +393,6 @@ function deleteEvents(event) {
         loadCalender();
     }
 }
-
 
 function cancel() {
     newEventModal.style.display = 'none';
@@ -463,17 +405,13 @@ function loadYears() {
     showingYear = document.getElementById('year');
     var startYear = 1900;
     var endYear = 2040;
-
     for (var i = startYear, j = 0; i <= endYear; i++, j++) {
         var Addoption = document.createElement("option");
         Addoption.value = i;
         Addoption.innerHTML = i;
         showingYear.options.add(Addoption);
-
         showingYear.options[j].removeAttribute("selected", "selected");
-        if (i == year) {
-            showingYear.options[j].setAttribute("selected", "selected");
-        }
+        if (i == year) showingYear.options[j].setAttribute("selected", "selected");
     }
     showingYear.onchange = () => {
         year = showingYear.value;
@@ -509,15 +447,12 @@ function changeMonthByArrow() {
  * @param {string} split
  */
 function customSplit(string, split) {
-    var arr = [],
-        result = '';
+    var arr = [], result = '';
     for (var i = 0; i < string.length; i++) {
         if (string[i] === split) {
             arr.push(result);
             result = '';
-        } else {
-            result += string[i];
-        }
+        } else result += string[i];
     }
     arr.push(result);
     return arr;
